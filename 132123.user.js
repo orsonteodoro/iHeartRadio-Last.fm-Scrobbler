@@ -558,7 +558,6 @@ function lastfm(loveBtnParent, lastfmBtnParent, SAAHandler) {
 					checkRunning("scrobble", start); }
 
 				lPElapsed = pelapsedInSec; 
-				lPElapsed--; //hack
 				}
 			else if ((totaltsec === false || totaltsec > 30) && ndat[0] != odat[0] && typeof ndat[0] != "undefined" && nPlaying != ndat[0] && pelapsedInSec > 0) {
 				var scrobbledat = "track=" + encodeURIComponent(ndat[0]) + "&artist=" + encodeURIComponent(ndat[1]) + "&api_key=" + API_KEY + "&sk=" + sKey;
@@ -580,7 +579,6 @@ function lastfm(loveBtnParent, lastfmBtnParent, SAAHandler) {
 				if (document.title == "Stopped/Paused") {
 					lovebtn.nodeValue = loved ? "Unlove Song" : "Love Song"; }
 				lPElapsed = pelapsedInSec;
-				lPElapsed--; //hack
 				document.title = ndat[0] + " by " + ndat[1] + titleAppend;
 				setTimeout(saa, 2000); } }
 		else {
@@ -1025,6 +1023,9 @@ iHeart.prototype.createParent = function() {
 	return buttonPar; };
 
 iHeart.prototype.setupDataGrabber = function() {
+    
+    
+    
 	var dataGrabber = function() {
 		var song = document.getElementById("spaghetti");
 		var artist = document.getElementById("thecook");
@@ -1043,12 +1044,21 @@ iHeart.prototype.setupDataGrabber = function() {
 			
 		var munch = function() {
 			// Stick data in the <span>s
+
+			if (document.getElementsByClassName("js-nowplaying-song")[0] || document.getElementsByClassName("js-nowplaying-artist")[0])
+			{
+				song.textContent = document.getElementsByClassName("js-nowplaying-song")[0].textContent ? document.getElementsByClassName("js-nowplaying-song")[0].textContent.trim() : "";
+				artist.textContent = document.getElementsByClassName("js-nowplaying-artist")[0].textContent ? document.getElementsByClassName("js-nowplaying-artist")[0].textContent.trim() : "";
+				album.textContent = "";
+			}
+            
+            /*
 			if ($C.player._unit.nowPlaying.name || $C.player._unit.nowPlaying.title) {
 				song.textContent = $C.player._unit.nowPlaying.name ? $C.player._unit.nowPlaying.name : $C.player._unit.nowPlaying.title;
 				album.textContent = $C.player._unit.nowPlaying.name ? $C.player._unit.nowPlaying.album : "";
 				artist.textContent = $C.player._unit.nowPlaying.artistName; 
 				//alert("song:"+song.textContent+" album:" + album.textContent + " artist:" + artist.textContent);
-			} else {
+			}*/ else {
 				song.textContent = "";
 				album.textContent = "";
 				artist.textContent = ""; }
@@ -1106,8 +1116,6 @@ iHeart.prototype.lastFmRunner = function(self) {
 				self.startLastfm(); } }
 		else {
 			//hack
-			totaltsec = 240;
-			pelapsedInSec = 245;
 			self.lfm.invoke([self.song.textContent, self.artist.textContent, self.album.textContent],
 				totaltsec, pelapsedInSec); } }; };
 			
