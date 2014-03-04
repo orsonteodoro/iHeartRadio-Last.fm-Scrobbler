@@ -1051,11 +1051,14 @@ iHeart.prototype.setupDataGrabber = function() {
 		var munch = function() {
 			// Stick data in the <span>s
 
-			if (document.getElementsByClassName("js-nowplaying-song")[0] || document.getElementsByClassName("js-nowplaying-artist")[0])
+			if (document.getElementsByClassName("js-nowplaying-song") || document.getElementsByClassName("js-nowplaying-artist"))
 			{
-				song.textContent = document.getElementsByClassName("js-nowplaying-song")[0].textContent ? document.getElementsByClassName("js-nowplaying-song")[0].textContent.trim() : "";
-				artist.textContent = document.getElementsByClassName("js-nowplaying-artist")[0].textContent ? document.getElementsByClassName("js-nowplaying-artist")[0].textContent.trim() : "";
+				song.textContent = (document.getElementsByClassName("js-nowplaying-song")[0] && document.getElementsByClassName("js-nowplaying-song")[0].textContent) ? document.getElementsByClassName("js-nowplaying-song")[0].textContent.trim() : 
+					document.getElementsByClassName("js-station-name")[0].textContent;
+				artist.textContent = (document.getElementsByClassName("js-nowplaying-artist")[0] && document.getElementsByClassName("js-nowplaying-artist")[0].textContent) ? document.getElementsByClassName("js-nowplaying-artist")[0].textContent.trim() : 
+					document.getElementsByClassName("js-station-name")[0].textContent;
 				album.textContent = "";
+				//alert("song:"+song.textContent+" album:" + album.textContent + " artist:" + artist.textContent);
 			}
             
             /*
