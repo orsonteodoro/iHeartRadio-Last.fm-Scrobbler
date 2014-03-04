@@ -1082,9 +1082,12 @@ iHeart.prototype.setupDataGrabber = function() {
 	document.body.removeChild(inject); };
 
 iHeart.prototype.getTrackTimes = function() {
-	//var duration = document.getElementsByClassName("songDuration")[0];
-	var duration = /*document.getElementsByClassName("songDuration")[0]*/"03:00"; //placeholder no longer supported
-	return duration.textContent.split(" / "); };
+	return "03:00".split(" / "); //placeholder for outdated code
+	/*
+	var duration = document.getElementsByClassName("songDuration")[0];
+	return duration.textContent.split(" / "); 
+	*/
+};
 
 iHeart.prototype.lastFmRunner = function(self) {
 	var wait = 0;
