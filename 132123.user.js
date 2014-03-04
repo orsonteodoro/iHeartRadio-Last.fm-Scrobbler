@@ -730,6 +730,7 @@ function lastfm(loveBtnParent, lastfmBtnParent, SAAHandler) {
 						GM_log(response.responseText);
 						odat = ndat; } }
 				else {
+					alert("lfm error: "+response.responseText);
 					GM_log(response.responseText); } } } ); };
 	
 	var checkRunning = function(action, start) {
@@ -909,6 +910,7 @@ function lastfm(loveBtnParent, lastfmBtnParent, SAAHandler) {
 		sKey = GM_getValue("sessKey");
 		uName = GM_getValue("username");
 		tFailedScrobs = GM_getValue("failedScrobs");
+		
 		if(typeof sKey == "undefined" || typeof uName == "undefined" ||
 			sKey == null || uName == null || sKey == false || uName == false) { 
 			auth = false;
@@ -927,6 +929,10 @@ function lastfm(loveBtnParent, lastfmBtnParent, SAAHandler) {
 			
 			if (typeof tFailedScrobs != "undefined" && tFailedScrobs != null && tFailedScrobs != false && tFailedScrobs != "") {
 				failedScrobs = JSON.parse(tFailedScrobs);
+				
+				while (failedScrobs.length >= 50)
+					failedScrobs.shift();
+
 				var datArr = new Array();
 
 				var scrobbledat = "";
@@ -1077,14 +1083,13 @@ iHeart.prototype.setupDataGrabber = function() {
 
 iHeart.prototype.getTrackTimes = function() {
 	//var duration = document.getElementsByClassName("songDuration")[0];
-	var duration = document.getElementsByClassName("songDuration")[0];
+	var duration = /*document.getElementsByClassName("songDuration")[0]*/"03:00"; //placeholder no longer supported
 	return duration.textContent.split(" / "); };
 
 iHeart.prototype.lastFmRunner = function(self) {
 	var wait = 0;
 	return function() {
-		//var trackTime = self.getTrackTimes(); //not supported in current version
-		var trackTime = "03:00"; //placeholder
+		var trackTime = self.getTrackTimes();
 		var totaltsec = self.lfm.convertTimeToSec(trackTime[1]);
 		var pelapsedInSec = self.lfm.convertTimeToSec(trackTime[0]);
 		
@@ -1115,7 +1120,6 @@ iHeart.prototype.lastFmRunner = function(self) {
 				self.lfm.killScrobbler();
 				self.startLastfm(); } }
 		else {
-			//hack
 			self.lfm.invoke([self.song.textContent, self.artist.textContent, self.album.textContent],
 				totaltsec, pelapsedInSec); } }; };
 			
