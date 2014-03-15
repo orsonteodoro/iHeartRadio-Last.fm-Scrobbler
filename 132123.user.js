@@ -981,9 +981,17 @@ function iHeart() {
 	this.album = document.createElement("span");
 	this.album.id = "noodles";
 
+	this.site = document.createElement("span");
+	this.site.id = "wine";
+	
+	this.talkhost = document.createElement("span");
+	this.talkhost.id = "bruschetta";	
+	
 	document.body.appendChild(this.song);
 	document.body.appendChild(this.artist);
-	document.body.appendChild(this.album); }
+	document.body.appendChild(this.album); 
+	document.body.appendChild(this.site);
+	document.body.appendChild(this.talkhost); }
 
 // Want last.fm buttons to go below station name.
 iHeart.prototype.createParent = function() {
@@ -1030,12 +1038,14 @@ iHeart.prototype.createParent = function() {
 
 iHeart.prototype.setupDataGrabber = function() {
     
-    
+	    
     
 	var dataGrabber = function() {
 		var song = document.getElementById("spaghetti");
 		var artist = document.getElementById("thecook");
 		var album = document.getElementById("noodles");
+		var site = document.getElementById("wine");
+		var talkhost = document.getElementById("bruschetta");
 		var keep = "";
 		
 		// Hackish way to set title every 50 ms to force the title to stay as the one set by this script.
@@ -1050,9 +1060,10 @@ iHeart.prototype.setupDataGrabber = function() {
 			
 		var munch = function() {
 			// Stick data in the <span>s
-
 			if (document.getElementsByClassName("js-nowplaying-song") || document.getElementsByClassName("js-nowplaying-artist"))
 			{
+				site.textContent = (document.getElementsByClassName("pg-profile-drawer-description-link")[0] && document.getElementsByClassName("pg-profile-drawer-description-link")[0].href) ? document.getElementsByClassName("pg-profile-drawer-description-link")[0].href.trim() : 
+					document.getElementsByClassName("js-station-name")[0].textContent;
 				song.textContent = (document.getElementsByClassName("js-nowplaying-song")[0] && document.getElementsByClassName("js-nowplaying-song")[0].textContent) ? document.getElementsByClassName("js-nowplaying-song")[0].textContent.trim() : 
 					document.getElementsByClassName("js-station-name")[0].textContent;
 				artist.textContent = (document.getElementsByClassName("js-nowplaying-artist")[0] && document.getElementsByClassName("js-nowplaying-artist")[0].textContent) ? document.getElementsByClassName("js-nowplaying-artist")[0].textContent.trim() : 
@@ -1070,7 +1081,9 @@ iHeart.prototype.setupDataGrabber = function() {
 			}*/ else {
 				song.textContent = "";
 				album.textContent = "";
-				artist.textContent = ""; }
+				artist.textContent = ""; 
+				site.textContent = ""; 
+			}
 			
 			// Update data every 3 seconds
 			setTimeout(munch, 3000); };
@@ -1098,6 +1111,24 @@ iHeart.prototype.lastFmRunner = function(self) {
 		var trackTime = self.getTrackTimes();
 		var totaltsec = self.lfm.convertTimeToSec(trackTime[1]);
 		var pelapsedInSec = self.lfm.convertTimeToSec(trackTime[0]);
+		
+		//grab host from station website
+		if (self.song.textContent == self.artist.textContent)
+		{
+			GM_xmlhttpRequest({
+			  method: "GET",
+			  url: self.site.textContent,
+			  onload: function(response) {
+				var parser = new DOMParser();
+				webpage = parser.parseFromString(response.responseText, "text/html");
+				if (webpage.getElementsByName("&lid=jockName&lpos=poc:on-air")[0])
+					self.talkhost.textContent = webpage.getElementsByName("&lid=jockName&lpos=poc:on-air")[0].textContent;
+			  }
+			});
+		
+			if (self.talkhost.textContent.length > 0)
+				self.song.textContent = self.talkhost.textContent;
+		}
 		
 		// A little hack to get it to scrobble even without the track's length (e.g., for real radio stations).
 		// It's still good to make sure at least 30 seconds of a song is played, though. songDetails is only
